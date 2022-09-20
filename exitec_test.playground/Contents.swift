@@ -45,7 +45,6 @@ class Whatever : MobileStorage {
             itemsMap[mobile.imei] = mobile
             UserDefaults.standard.set(itemsMap, forKey: key)
         }
-            // чому на виході треба Мобайл тип?
             return mobile
     }
     
