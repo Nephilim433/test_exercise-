@@ -60,7 +60,12 @@ class Whatever : MobileStorage {
     func exists(_ product: Mobile) -> Bool {
         itemsMap[product.imei] != nil
     }
+    
+    
+    let mobile1 = Mobile(imei: "12312313", model: "1231231231")
+    
 }
+
 
 
 
