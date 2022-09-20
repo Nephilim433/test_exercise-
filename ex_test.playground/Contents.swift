@@ -23,35 +23,42 @@ enum MobileErrors: Error {
 }
 
 class Whatever : MobileStorage {
-    private var itemsMap : [String: Mobile]
-    private let key = "mobileKey"
     
-    init() {
-        itemsMap = UserDefaults.standard.object(forKey: key) as? [String:Mobile] ?? [:]
-    }
+    public let shared = Whatever()
     
-     func getAll() -> Set<Mobile> {
-         Set<Mobile>(itemsMap.values)
+    private var itemsMap = UserDefaults.standard.object(forKey: key) as? [String: String] ?? [:]
+    private static let key = "mobileKey"
+    
+    
+    func getAll() -> Set<Mobile> {
+        var result: Set<Mobile> = .init()
+        itemsMap.forEach { (key, value) in
+            result.insert(.init(imei: key, model: value))
+        }
+        return result
     }
     
     func findByImei(_ imei: String) -> Mobile? {
-        itemsMap[imei]
+        guard let model = itemsMap[imei] else { return nil }
+        return Mobile(imei: imei, model: model)
     }
     
     func save(_ mobile: Mobile) throws -> Mobile {
         if itemsMap[mobile.imei] != nil  {
             throw MobileErrors.dataAlreadyExists
         } else {
-            itemsMap[mobile.imei] = mobile
-            UserDefaults.standard.set(itemsMap, forKey: key)
+            itemsMap[mobile.imei] = mobile.model
+            UserDefaults.standard.set(itemsMap, forKey: Self.key)
+            print("saved")
         }
             return mobile
     }
-    
+
     func delete(_ product: Mobile) throws {
         if itemsMap[product.imei] != nil {
             itemsMap.removeValue(forKey: product.imei)
-            UserDefaults.standard.set(itemsMap, forKey: key)
+            UserDefaults.standard.set(itemsMap, forKey: Self.key)
+            print("Item deleted")
         } else {
             throw MobileErrors.dataNotFound
         }
@@ -61,10 +68,8 @@ class Whatever : MobileStorage {
         itemsMap[product.imei] != nil
     }
     
-    
-    let mobile1 = Mobile(imei: "12312313", model: "1231231231")
-    
 }
+
 
 
 
